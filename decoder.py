@@ -132,6 +132,8 @@ class ExceptionDataParser(object):
 
         for line in file:
             func = func(line.strip())
+            if func is None:
+                break
 
         if func is not None:
             print("ERROR: Parser not complete!")
@@ -149,17 +151,23 @@ class AddressResolver(object):
         output = subprocess.check_output(cmd, encoding="utf-8")
 
         line_regex = re.compile("^(?P<addr>[0-9a-fx]+): (?P<result>.+)$")
+
+        last = None
         for line in output.splitlines():
             line = line.strip()
             match = line_regex.match(line)
 
             if match is None:
+                if last is not None and line.startswith('(inlined by)'):
+                    line = line [12:].strip()
+                    self._address_map[last] += ("\n  \-> inlined by: " + line)
                 continue
 
             if match.group("result") == '?? ??:0':
                 continue
 
             self._address_map[match.group("addr")] = match.group("result")
+            last = match.group("addr")
 
     def fill(self, parser):
         addresses = [parser.epc1, parser.epc2, parser.epc3, parser.excvaddr, parser.sp, parser.end, parser.offset]
