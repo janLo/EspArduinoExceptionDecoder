@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
 
+"""ESP Exception Decoder
+
+github:  https://github.com/janLo/EspArduinoExceptionDecoder
+license: GPL v3
+author:  Jan Losinski
+"""
+
 import argparse
 import re
 import subprocess
