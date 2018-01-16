@@ -127,8 +127,10 @@ class ExceptionDataParser(object):
             return self._parse_stack_line
         return None
 
-    def parse_file(self, file):
+    def parse_file(self, file, stack_only=False):
         func = self._parse_exception
+        if stack_only:
+            func = self._parse_stack_begin
 
         for line in file:
             func = func(line.strip())
@@ -224,25 +226,26 @@ def print_stack(lines, resolver):
             print(out)
 
 
-def print_result(parser, resolver, full=True):
-    print('Exception: {} ({})'.format(parser.exception, EXCEPTIONS[parser.exception]))
+def print_result(parser, resolver, full=True, stack_only=False):
+    if not stack_only:
+        print('Exception: {} ({})'.format(parser.exception, EXCEPTIONS[parser.exception]))
 
-    print("")
-    print_addr("epc1", parser.epc1, resolver)
-    print_addr("epc2", parser.epc2, resolver)
-    print_addr("epc3", parser.epc3, resolver)
-    print_addr("excvaddr", parser.excvaddr, resolver)
-    print_addr("depc", parser.depc, resolver)
+        print("")
+        print_addr("epc1", parser.epc1, resolver)
+        print_addr("epc2", parser.epc2, resolver)
+        print_addr("epc3", parser.epc3, resolver)
+        print_addr("excvaddr", parser.excvaddr, resolver)
+        print_addr("depc", parser.depc, resolver)
 
-    print("")
-    print("ctx: " + parser.ctx)
+        print("")
+        print("ctx: " + parser.ctx)
 
-    print("")
-    print_addr("sp", parser.sp, resolver)
-    print_addr("end", parser.end, resolver)
-    print_addr("offset", parser.offset, resolver)
+        print("")
+        print_addr("sp", parser.sp, resolver)
+        print_addr("end", parser.end, resolver)
+        print_addr("offset", parser.offset, resolver)
 
-    print("")
+        print("")
     if full:
         print_stack_full(parser.stack, resolver)
     else:
@@ -258,6 +261,7 @@ def parse_args():
                         default="~/.platformio/packages/toolchain-xtensa/")
     parser.add_argument("-e", "--elf", help="path to elf file", required=True)
     parser.add_argument("-f", "--full", help="Print full stack dump", action="store_true")
+    parser.add_argument("-s", "--stack_only", help="Decode only a stractrace", action="store_true")
     parser.add_argument("file", help="The file to read the exception data from ('-' for STDIN)", default="-")
 
     return parser.parse_args()
@@ -286,7 +290,7 @@ if __name__ == "__main__":
     parser = ExceptionDataParser()
     resolver = AddressResolver(addr2line, elf_file)
 
-    parser.parse_file(file)
+    parser.parse_file(file, args.stack_only)
     resolver.fill(parser)
 
-    print_result(parser, resolver, args.full)
+    print_result(parser, resolver, args.full, args.stack_only)
