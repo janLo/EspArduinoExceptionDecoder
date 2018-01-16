@@ -55,7 +55,7 @@ POINTER_REGEX = re.compile('^sp: (?P<sp>[0-9a-f]+) end: (?P<end>[0-9a-f]+) offse
 STACK_BEGIN = '>>>stack>>>'
 STACK_END = '<<<stack<<<'
 STACK_REGEX = re.compile(
-    '^(?P<off>[0-9a-f]+):\W+(?P<c1>[0-9a-f]+) (?P<c2>[0-9a-f]+) (?P<c3>[0-9a-f]+) (?P<c4>[0-9a-f]+)$')
+    '^(?P<off>[0-9a-f]+):\W+(?P<c1>[0-9a-f]+) (?P<c2>[0-9a-f]+) (?P<c3>[0-9a-f]+) (?P<c4>[0-9a-f]+)(\W.*)?$')
 
 StackLine = namedtuple("StackLine", ["offset", "content"])
 
