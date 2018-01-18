@@ -35,7 +35,7 @@ The elf path is the path to your built elf binary. On PlatformIO it is located a
 
 ## Dependencies:
 
-* python 3
+* python 3 or 2.7
 * The xtensa toolchain for your ESP
 
 
