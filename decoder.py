@@ -157,7 +157,11 @@ class AddressResolver(object):
 
     def _lookup(self, addresses):
         cmd = [self._tool, "-aipfC", "-e", self._elf] + [addr for addr in addresses if addr is not None]
-        output = subprocess.check_output(cmd, encoding="utf-8")
+
+        if sys.version_info[0] < 3:
+            output = subprocess.check_output(cmd)
+        else:
+            output = subprocess.check_output(cmd, encoding="utf-8")
 
         line_regex = re.compile("^(?P<addr>[0-9a-fx]+): (?P<result>.+)$")
 
